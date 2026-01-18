@@ -2,100 +2,94 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TAHA İFŞA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taha Ifsa</title>
     <style>
         body {
             margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            background-color: #1a1a1a; /* Koyu arka plan */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; /* Taşmaları gizle */
+            overflow: hidden;
             font-family: 'Arial Black', sans-serif;
-            color: white;
-            position: relative;
         }
 
-        .ifsa-button {
-            width: 250px; /* Daha büyük buton */
-            height: 250px;
-            background: linear-gradient(45deg, #ff0000, #cc0000); /* Kırmızı gradient */
+        /* Kırmızı Yuvarlak Buton */
+        #ifsaBtn {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #ff0000, #990000);
+            border: 8px solid #440000;
             border-radius: 50%;
-            border: 8px solid #8b0000; /* Koyu kırmızı kenarlık */
-            box-shadow: 0 0 60px rgba(255, 0, 0, 0.7); /* Parlak gölge */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            z-index: 100; /* En önde dursun */
-            position: relative;
-            text-transform: uppercase;
-            font-size: 1.8rem; /* Yazı boyutu */
-            font-weight: bold;
             color: white;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            font-size: 20px;
+            font-weight: bold;
             text-align: center;
-            line-height: 1.2;
+            cursor: pointer;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            transition: transform 0.1s;
+            z-index: 10;
         }
 
-        .ifsa-button:active {
-            transform: scale(0.95); /* Basıldığında küçülme efekti */
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+        #ifsaBtn:active {
+            transform: scale(0.9);
         }
 
-        /* Fırlayan fotoğraflar için stil */
-        .ifsa-photo {
-            position: absolute;
-            max-width: 300px; /* Fotoğraf boyutu */
-            max-height: 300px;
-            border: 5px solid white;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        /* Fırlayacak Fotoğraf */
+        #ifsaFoto {
             display: none; /* Başlangıçta gizli */
-            z-index: 90;
-            animation: pop-out 0.5s forwards ease-out; /* Fırlama animasyonu */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            max-width: 100vw;
+            max-height: 100vh;
+            z-index: 20;
         }
 
-        @keyframes pop-out {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        /* Fırlama Animasyonu */
+        .firlat {
+            display: block !important;
+            animation: firlamaEfekti 0.3s forwards cubic-bezier(0.17, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes firlamaEfekti {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <button class="ifsa-button" onclick="ifsaFirlat()">
-        TAHA İFŞA<br>BUTONU
-    </button>
+    <button id="ifsaBtn" onclick="aksiyon()">TAHA İFŞA<br>BUTONU</button>
 
-    <img id="ifsaGorseli" class="ifsa-photo" src="ifsa.jpg" alt="İfşa" style="display: none;">
+    <img id="ifsaFoto" src="ifsa.jpg">
+
+    <audio id="ses" src="Ses.mp3" preload="auto"></audio>
 
     <script>
-        function ifsaFirlat() {
-            const ifsaGorseli = document.getElementById('ifsaGorseli');
-            
-            // Fotoğrafı görünür yap
-            ifsaGorseli.style.display = 'block';
+        function aksiyon() {
+            const btn = document.getElementById('ifsaBtn');
+            const foto = document.getElementById('ifsaFoto');
+            const ses = document.getElementById('ses');
 
-            // Fotoğrafı rastgele bir yere konumlandır
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            // 1. Butonu anında yok et
+            btn.style.display = 'none';
 
-            const randomX = Math.random() * (viewportWidth - ifsaGorseli.clientWidth) + ifsaGorseli.clientWidth / 2;
-            const randomY = Math.random() * (viewportHeight - ifsaGorseli.clientHeight) + ifsaGorseli.clientHeight / 2;
+            // 2. Fotoğrafı fırlat
+            foto.classList.add('firlat');
 
-            ifsaGorseli.style.left = randomX + 'px';
-            ifsaGorseli.style.top = randomY + 'px';
+            // 3. Sesi çal
+            ses.volume = 1.0;
+            ses.play();
 
-            // Butona tekrar basıldığında aynı resmi tekrar fırlatmak yerine yeni bir konumlandırma yapabiliriz
-            // Veya butonu devre dışı bırakabiliriz. Şimdilik her basışta fırlatır.
-
-            // Opsiyonel: Ses eklemek istersen buraya bir ses kodu ekleyebiliriz
-            // const ses = new Audio('ses.mp3'); 
-            // ses.volume = 1.0;
-            // ses.play();
+            // 4. Telefonu titret
+            if (navigator.vibrate) {
+                navigator.vibrate(500);
+            }
         }
     </script>
 </body>
