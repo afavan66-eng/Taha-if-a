@@ -3,93 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taha Ifsa</title>
+    <title>Taha Ifsa Pro</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Arial Black', sans-serif;
+            margin: 0; padding: 0; background-color: #000;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden; font-family: 'Arial Black', sans-serif;
         }
 
-        /* Kırmızı Yuvarlak Buton */
-        #ifsaBtn {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #ff0000, #990000);
-            border: 8px solid #440000;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+        /* Kırmızı Buton Tasarımı */
+        #baslatBtn {
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, #ff0000, #800000);
+            border: 10px solid #222; border-radius: 50%;
+            color: white; font-weight: bold; font-size: 22px;
+            cursor: pointer; box-shadow: 0 0 60px rgba(255, 0, 0, 0.6);
+            z-index: 100; text-align: center; outline: none;
             transition: transform 0.1s;
-            z-index: 10;
         }
+        #baslatBtn:active { transform: scale(0.9); }
 
-        #ifsaBtn:active {
-            transform: scale(0.9);
-        }
-
-        /* Fırlayacak Fotoğraf */
-        #ifsaFoto {
-            display: none; /* Başlangıçta gizli */
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            max-width: 100vw;
-            max-height: 100vh;
-            z-index: 20;
-        }
-
-        /* Fırlama Animasyonu */
-        .firlat {
-            display: block !important;
-            animation: firlamaEfekti 0.3s forwards cubic-bezier(0.17, 0.89, 0.32, 1.28);
-        }
-
-        @keyframes firlamaEfekti {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+        /* Fotoğrafların Tam Ekran Alanı */
+        #slaytSistemi {
+            display: none; 
+            width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0;
+            background-size: contain; /* Fotoğrafın tamamını ekrana sığdırır */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #000;
+            z-index: 200;
         }
     </style>
 </head>
 <body>
 
-    <button id="ifsaBtn" onclick="aksiyon()">TAHA İFŞA<br>BUTONU</button>
+    <button id="baslatBtn" onclick="baslat()">TAHA İFŞA<br>BUTONU</button>
 
-    <img id="ifsaFoto" src="ifsa.jpg">
+    <div id="slaytSistemi"></div>
 
-    <audio id="ses" src="Ses.mp3" preload="auto"></audio>
+    <audio id="ses" src="Ses.mp3" loop preload="auto"></audio>
 
     <script>
-        function aksiyon() {
-            const btn = document.getElementById('ifsaBtn');
-            const foto = document.getElementById('ifsaFoto');
+        // Fotoğraf isimlerini buraya yazdım. GitHub'a bu isimlerle yükle.
+        const fotograflar = ["ifsa1.jpg", "ifsa2.jpg", "ifsa3.jpg"];
+        let sira = 0;
+
+        function baslat() {
+            const btn = document.getElementById('baslatBtn');
+            const slayt = document.getElementById('slaytSistemi');
             const ses = document.getElementById('ses');
 
-            // 1. Butonu anında yok et
+            // 1. Butonu ekrandan sil
             btn.style.display = 'none';
 
-            // 2. Fotoğrafı fırlat
-            foto.classList.add('firlat');
-
-            // 3. Sesi çal
-            ses.volume = 1.0;
-            ses.play();
-
-            // 4. Telefonu titret
-            if (navigator.vibrate) {
-                navigator.vibrate(500);
+            // 2. Tam Ekran Moduna Geç
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
             }
+
+            // 3. Slayt alanını aç ve sesi oynat
+            slayt.style.display = 'block';
+            ses.play().catch(e => console.log("Ses çalma hatası:", e));
+
+            function resimDegistir() {
+                // Arka plan resmini sıradaki fotoğrafla değiştir
+                slayt.style.backgroundImage = `url('${fotograflar[sira]}')`;
+                // Sırayı bir artır, 3'e gelince 0'a dön (sonsuz döngü)
+                sira = (sira + 1) % fotograflar.length;
+            }
+
+            // İlk resmi hemen göster
+            resimDegistir();
+
+            // Her 3 saniyede (3000 ms) bir resmi değiştir
+            setInterval(resimDegistir, 3000); 
+            
+            // Telefonu kısa süreli titret
+            if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
         }
     </script>
 </body>
